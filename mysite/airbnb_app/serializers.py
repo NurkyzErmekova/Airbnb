@@ -3,7 +3,6 @@ from .models import User, City, Rule, Property, PropertyImage, Booking, Review
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
-# --- ПОЛЬЗОВАТЕЛИ И АВТОРИЗАЦИЯ ---
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,11 +16,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        # Создаем пользователя через специальный метод для хеширования пароля
         return User.objects.create_user(**validated_data)
 
     def to_representation(self, instance):
-        # Генерируем токены сразу после регистрации
         refresh = RefreshToken.for_user(instance)
         return {
             'user': {
@@ -45,7 +42,6 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("Неверный логин или пароль")
 
     def to_representation(self, instance):
-        # Генерируем токены при успешном входе
         refresh = RefreshToken.for_user(instance)
         return {
             'user': {
@@ -57,7 +53,6 @@ class LoginSerializer(serializers.Serializer):
             'refresh': str(refresh),
         }
 
-# --- ГОРОДА И ИЗОБРАЖЕНИЯ ---
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,7 +64,6 @@ class PropertyImageSerializer(serializers.ModelSerializer):
         model = PropertyImage
         fields = ['image', 'is_main']
 
-# --- ОБЪЯВЛЕНИЯ (PROPERTY) ---
 
 class PropertyListSerializer(serializers.ModelSerializer):
     city = serializers.CharField(source='city.name', read_only=True)
@@ -104,13 +98,12 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
             'bedrooms', 'bathrooms', 'rules'
         ]
 
-# --- БРОНИРОВАНИЕ И ОТЗЫВЫ ---
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = '__all__'
-        read_only_fields = ['guest'] # Гость берется из request.user в методе perform_create
+        read_only_fields = ['guest']
 
 class ReviewSerializer(serializers.ModelSerializer):
     guest = serializers.CharField(source='guest.username', read_only=True)

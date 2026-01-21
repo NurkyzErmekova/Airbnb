@@ -14,7 +14,6 @@ from .serializers import (
 )
 from .permissions import IsGuestPermission, IsHostPermission
 
-# --- AUTH ---
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     queryset = User.objects.all()
@@ -35,7 +34,7 @@ class LogoutView(generics.GenericAPIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-# --- LOGIC ---
+
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.filter(is_active=True)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
